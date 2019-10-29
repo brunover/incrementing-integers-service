@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/incrementing-integers-service/server/http_helper"
 	postgres "github.com/incrementing-integers-service/server/models"
@@ -48,6 +49,7 @@ func main() {
 	if *devMode {
 		log.Println("Server started in dev mode")
 		httpClient := &http.Client{
+			Timeout: time.Second * 10,
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			},
@@ -72,6 +74,7 @@ func main() {
 	userRouter := sharedRouter.PathPrefix("/users").Subrouter()
 	userRouter.HandleFunc("/{id:[0-9]+}", h.GetRequestCB(user.Get)).Methods("GET")
 	userRouter.HandleFunc("/{id:[0-9]+}/next", h.NextInteger).Methods("GET")
+	userRouter.HandleFunc("/{id:[0-9]+}/current", h.CurrentInteger).Methods("GET")
 	userRouter.HandleFunc("/{id:[0-9]+}/current", h.UpdateInteger).Methods("PATCH")
 	userRouter.HandleFunc("", h.AddUser).Methods("POST")
 

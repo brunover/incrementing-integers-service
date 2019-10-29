@@ -77,3 +77,11 @@ func UpdateInteger(db *postgres.DB, id int, current int) (int, error) {
 	_, err := db.Exec(sql, current, id)
 	return current, err
 }
+
+// CurrentInteger returns the current integedr of an user
+func CurrentInteger(db *postgres.DB, id int) (int, error) {
+	user := User{}
+	sql := `SELECT int_value FROM users WHERE id = $1`
+	err := db.QueryRow(sql, id).Scan(&user.IntValue)
+	return user.IntValue, err
+}

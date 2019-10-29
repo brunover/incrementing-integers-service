@@ -200,7 +200,7 @@ func (h *Handler) NextInteger(w http.ResponseWriter, r *http.Request) {
 		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorBadFields.Error())
 		return
 	}
-	_, err = user.NextInteger(h.Db, id)
+	nextInteger, err := user.NextInteger(h.Db, id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println(err)
@@ -211,7 +211,33 @@ func (h *Handler) NextInteger(w http.ResponseWriter, r *http.Request) {
 		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorCannotFulfilRequest.Error())
 		return
 	}
-	http_helper.ReturnResponseMsg(w, http.StatusOK, "")
+	http_helper.ReturnResponseMsg(w, http.StatusOK, nextInteger)
+}
+
+// CurrentInteger returns an user integer +1
+func (h *Handler) CurrentInteger(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	if _, ok := params["id"]; !ok {
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorMissingFields.Error())
+		return
+	}
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorBadFields.Error())
+		return
+	}
+	currentInteger, err := user.CurrentInteger(h.Db, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Println(err)
+			http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorNotFound.Error())
+			return
+		}
+		log.Println(err)
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorCannotFulfilRequest.Error())
+		return
+	}
+	http_helper.ReturnResponseMsg(w, http.StatusOK, currentInteger)
 }
 
 // UpdateInteger updates a user integer value in the DB
@@ -247,5 +273,5 @@ func (h *Handler) UpdateInteger(w http.ResponseWriter, r *http.Request) {
 		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorCannotFulfilRequest.Error())
 		return
 	}
-	http_helper.ReturnResponseMsg(w, http.StatusOK, "")
+	http_helper.ReturnResponseMsg(w, http.StatusOK, current)
 }
