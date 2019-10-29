@@ -5,15 +5,17 @@ import { Alert, Panel } from "fundamental-react"
 export default class NoMatch extends Component {
   render() {
     return (
-      <div>
-        <Panel>
-          <Panel.Body>
-            <Alert type='warning'>
-              <h3>Page not found - 404</h3>
-              <p>{window.location.href}</p>
-            </Alert>
-          </Panel.Body>
-        </Panel>
+      <div className='fd-container fd-container--centered'>
+        <div className='fd-has-margin-bottom-medium'>
+          <Panel>
+            <Panel.Body>
+              <Alert type='warning'>
+                <h3>Page not found - 404</h3>
+                <p>{window.location.href}</p>
+              </Alert>
+            </Panel.Body>
+          </Panel>
+        </div>
       </div>
     )
   }

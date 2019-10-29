@@ -1,14 +1,19 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Shellbar } from "fundamental-react"
+import { Auth0Context } from "../../react-auth0-spa"
 
 // Header contains the Shell bar component from Fiori Fundamentals
 export default class Header extends Component {
+  // Assign the context type to a static property
+  static contextType = Auth0Context
+
   static propTypes = {
     user: PropTypes.object.isRequired
   }
 
   render() {
+    const { logout } = this.context
     const { user } = this.props
 
     return (
@@ -25,10 +30,10 @@ export default class Header extends Component {
           profileMenu={[
             {
               callback: () => {
-                alert("Signing out!")
+                logout()
               },
               glyph: "log",
-              name: "Sign Out",
+              name: "Log Out",
               size: "s"
             }
           ]}
