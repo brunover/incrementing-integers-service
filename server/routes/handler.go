@@ -188,15 +188,10 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 	http_helper.ReturnResponseMsg(w, http.StatusCreated, uid)
 }
 
-// UpdateInteger updates a user integer value in the DB
-func (h *Handler) UpdateInteger(w http.ResponseWriter, r *http.Request) {
+// NextInteger returns an user integer +1
+func (h *Handler) NextInteger(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	if _, ok := params["id"]; !ok {
-		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorMissingFields.Error())
-		return
-	}
-	r.ParseForm()
-	if !haveRequiredFormInputs(r.Form, "intValue") {
 		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorMissingFields.Error())
 		return
 	}
@@ -205,12 +200,43 @@ func (h *Handler) UpdateInteger(w http.ResponseWriter, r *http.Request) {
 		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorBadFields.Error())
 		return
 	}
-	intValue, err := strconv.Atoi(r.Form["intValue"][0])
+	_, err = user.NextInteger(h.Db, id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Println(err)
+			http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorNotFound.Error())
+			return
+		}
+		log.Println(err)
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorCannotFulfilRequest.Error())
+		return
+	}
+	http_helper.ReturnResponseMsg(w, http.StatusOK, "")
+}
+
+// UpdateInteger updates a user integer value in the DB
+func (h *Handler) UpdateInteger(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	if _, ok := params["id"]; !ok {
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorMissingFields.Error())
+		return
+	}
+	r.ParseForm()
+	if !haveRequiredFormInputs(r.Form, "current") {
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorMissingFields.Error())
+		return
+	}
+	id, err := strconv.Atoi(params["id"])
 	if err != nil {
 		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorBadFields.Error())
 		return
 	}
-	err = user.UpdateInteger(h.Db, id, intValue)
+	current, err := strconv.Atoi(r.Form["current"][0])
+	if err != nil {
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorBadFields.Error())
+		return
+	}
+	_, err = user.UpdateInteger(h.Db, id, current)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			log.Println(err)

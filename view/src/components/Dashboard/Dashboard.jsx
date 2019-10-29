@@ -1,12 +1,24 @@
 import React, { Component } from "react"
-import { getUser } from "../../utils/api"
+import { serializeObj } from "../../utils/utils"
+import { getUser, getInteger, patchInteger } from "../../utils/api"
 import { Header, Loader } from "../components"
-import { Panel, PanelGrid, Tile, ActionBar, Status } from "fundamental-react"
+import {
+  Panel,
+  PanelGrid,
+  Tile,
+  ActionBar,
+  Status,
+  Button
+} from "fundamental-react"
 
 export default class Dashboard extends Component {
   _isMounted = false
 
   state = {
+    isLoadingUser: true,
+    isLoadingInteger: false,
+    error: null,
+    success: null,
     user: {}
   }
 
@@ -27,23 +39,67 @@ export default class Dashboard extends Component {
 
   componentDidMount() {
     this._isMounted = true
-    this.fetchUsers()
+    this.fetchUser(1)
   }
 
-  fetchUsers = () => {
-    return getUser(1)
+  fetchUser = id => {
+    return getUser(id)
       .then(data => {
         const user = data || []
-        this.safeSetState({ isLoading: false, user })
+        this.safeSetState({ isLoadingUser: false, user })
       })
       .catch(error => {
         console.error(error.response)
-        this.safeSetState({ isLoading: false, error })
+        this.safeSetState({ isLoadingUser: false, error })
+      })
+  }
+
+  requestNewInteger = id => {
+    this.safeSetState({ isLoadingInteger: true })
+    getInteger(id)
+      .then(res => {
+        if (res.status === 200) {
+          this.fetchUser(id)
+          this.safeSetState({ isLoadingInteger: false })
+        }
+      })
+      .catch(error => {
+        console.error(error.response)
+        this.safeSetState({ isLoadingInteger: false, error })
+      })
+  }
+
+  resetInteger = id => {
+    let current = window.prompt(
+      "Inform the new integer value (bigger than zero):"
+    )
+    if (!current) return
+    current = current.trim()
+    if (isNaN(current)) {
+      alert("You must provide a number")
+      return
+    }
+    current = Number(current)
+    if (current < 0) {
+      alert("You must provide a number bigger than zero")
+      return
+    }
+    this.safeSetState({ isLoadingInteger: true })
+    patchInteger(id, serializeObj({ current }))
+      .then(res => {
+        if (res.status === 200) {
+          this.fetchUser(id)
+          this.safeSetState({ isLoadingInteger: false })
+        }
+      })
+      .catch(error => {
+        console.error(error.response)
+        this.setState({ isLoadingInteger: false, error })
       })
   }
 
   render() {
-    const { isLoading, error, user } = this.state
+    const { isLoadingUser, isLoadingInteger, error, user } = this.state
 
     return (
       <div className='fd-container fd-container--centered'>
@@ -66,10 +122,22 @@ export default class Dashboard extends Component {
                       description='Request the next integer or reset the value of the current one'
                       title='Your personal integer'
                     />
+                    <ActionBar.Actions>
+                      <Button
+                        glyph='add'
+                        onClick={() => this.requestNewInteger(user.id || 0)}>
+                        Request New Integer
+                      </Button>
+                      <Button
+                        glyph='refresh'
+                        onClick={() => this.resetInteger(user.id || 0)}>
+                        Reset My Integer
+                      </Button>
+                    </ActionBar.Actions>
                   </ActionBar>
 
                   {/* Counters */}
-                  {isLoading ? (
+                  {isLoadingUser ? (
                     // Loading data from api
                     <Loader />
                   ) : (
@@ -80,7 +148,7 @@ export default class Dashboard extends Component {
                           <Tile>
                             <Tile.Content title='User'>
                               <p className='fd-has-type-4'>
-                                {user.email || ""}
+                                {user.email || "No user"}
                               </p>
                             </Tile.Content>
                           </Tile>
@@ -90,9 +158,13 @@ export default class Dashboard extends Component {
                         <Panel.Body>
                           <Tile>
                             <Tile.Content title='Current Integer'>
-                              <p className='fd-has-type-4'>
-                                {user.int_value || 0}
-                              </p>
+                              {isLoadingInteger ? (
+                                <Loader size='s' />
+                              ) : (
+                                <p className='fd-has-type-4'>
+                                  {user.int_value || 0}
+                                </p>
+                              )}
                             </Tile.Content>
                           </Tile>
                         </Panel.Body>

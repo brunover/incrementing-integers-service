@@ -1,6 +1,8 @@
 package user
 
 import (
+	"log"
+
 	postgres "github.com/incrementing-integers-service/server/models"
 )
 
@@ -38,14 +40,14 @@ func GetList(db *postgres.DB) ([]interface{}, error) {
 	defer rows.Close()
 	for rows.Next() {
 		rows.Scan(
-			&user.ID, &user.Email, &user.Password, &user.IntValue,
+			&user.Email, &user.Password, &user.IntValue, &user.Created, &user.Updated,
 		)
 		arr = append(arr, user)
 	}
 	return arr, err
 }
 
-// Get retrieves a User entry
+// Get retrieves an User entry
 func Get(db *postgres.DB, id int) (interface{}, error) {
 	user := &User{}
 	sql := `SELECT id, email, password, int_value FROM users WHERE id = $1`
@@ -53,9 +55,25 @@ func Get(db *postgres.DB, id int) (interface{}, error) {
 	return user, err
 }
 
+// NextInteger updates users integer in DB and add +1
+func NextInteger(db *postgres.DB, id int) (int, error) {
+	log.Printf("ID %d requested new integer", id)
+	user := User{}
+	sql := `SELECT id, email, password, int_value FROM users WHERE id = $1`
+	err := db.QueryRow(sql, id).Scan(&user.ID, &user.Email, &user.Password, &user.IntValue)
+	nextInteger := user.IntValue + 1
+	intValue, err := UpdateInteger(db, id, nextInteger)
+	if err != nil {
+		log.Printf("Updated value to: %d", intValue)
+		return intValue, err
+	}
+	return nextInteger, err
+}
+
 // UpdateInteger changes the current integer value
-func UpdateInteger(db *postgres.DB, id int, intValue int) error {
+func UpdateInteger(db *postgres.DB, id int, current int) (int, error) {
+	log.Printf("ID %d will updateinteger to: %d", id, current)
 	sql := `UPDATE users SET int_value=$1 WHERE id=$2`
-	_, err := db.Exec(sql, intValue, id)
-	return err
+	_, err := db.Exec(sql, current, id)
+	return current, err
 }

@@ -70,9 +70,9 @@ func main() {
 
 	// Users routes
 	userRouter := sharedRouter.PathPrefix("/users").Subrouter()
-	userRouter.HandleFunc("", h.GetListRequestCB(user.GetList)).Methods("GET")
 	userRouter.HandleFunc("/{id:[0-9]+}", h.GetRequestCB(user.Get)).Methods("GET")
-	userRouter.HandleFunc("/{id:[0-9]+}", h.UpdateInteger).Methods("PATCH")
+	userRouter.HandleFunc("/{id:[0-9]+}/next", h.NextInteger).Methods("GET")
+	userRouter.HandleFunc("/{id:[0-9]+}/current", h.UpdateInteger).Methods("PATCH")
 	userRouter.HandleFunc("", h.AddUser).Methods("POST")
 
 	go http.StartApiServer(5678)
