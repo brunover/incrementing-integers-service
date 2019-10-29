@@ -1,6 +1,6 @@
 FROM golang:1.13 as builder
 WORKDIR /go/src/github.com/incrementing-integers-service/server
-ENV version 0.2.2
+ENV version 0.1.0
 
 # Copy build files.
 COPY . .

@@ -158,13 +158,12 @@ export default class Dashboard extends Component {
                         <Panel.Body>
                           <Tile>
                             <Tile.Content title='Current Integer'>
-                              {isLoadingInteger ? (
-                                <Loader size='s' />
-                              ) : (
-                                <p className='fd-has-type-4'>
-                                  {user.int_value || 0}
-                                </p>
-                              )}
+                              <p className='fd-has-type-4'>
+                                {user.int_value || 0}
+                                {isLoadingInteger && (
+                                  <Loader size='s' type='synch' />
+                                )}
+                              </p>
                             </Tile.Content>
                           </Tile>
                         </Panel.Body>

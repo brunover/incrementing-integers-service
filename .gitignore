@@ -10,18 +10,12 @@
 **/logs
 *.log
 
-# production
-**/build
-
 # misc
 .DS_Store
 *.env
 **/.env
 
-# go server temps, configs and binaries
-/temp_storage/*
-/server/temp_storage/*
-/server/configuration/*
+# go server binaries
 /server/server.exe
 /server/server
 
