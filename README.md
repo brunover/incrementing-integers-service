@@ -25,3 +25,8 @@ cd view
 npm start 
 or 
 ./ui-build
+
+curl http://localhost/api/v1/users/1/
+curl http://localhost/api/v1/users/1/current
+curl http://localhost/api/v1/users/1/next
+curl -X "PATCH" http://localhost/api/v1/users/1/current -H "Authorization: Bearer XXXXX" --data "current=1000"
