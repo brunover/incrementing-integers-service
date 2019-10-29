@@ -163,18 +163,17 @@ func haveRequiredFormInputs(reqBody url.Values, expected ...string) bool {
 // AddUser add a user to the DB
 func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
-	if !haveRequiredFormInputs(r.Form, "firstName", "lastName", "sapId", "email") {
+	if !haveRequiredFormInputs(r.Form, "email") {
 		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorMissingFields.Error())
 		return
 	}
 	email := r.Form["email"][0]
-	password := r.Form["password"][0]
 	intValue, errParse := strconv.Atoi(r.Form["intValue"][0])
 	if errParse != nil {
 		log.Println(errParse)
 		return
 	}
-	u := &user.User{Email: email, Password: password, IntValue: intValue}
+	u := &user.User{Email: email, IntValue: intValue}
 	uid, err := user.Create(h.Db, u)
 	if err != nil {
 		log.Println(err)
@@ -186,6 +185,28 @@ func (h *Handler) AddUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http_helper.ReturnResponseMsg(w, http.StatusCreated, uid)
+}
+
+// GetUser returns an user
+func (h *Handler) GetUser(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	if !haveRequiredFormInputs(r.Form, "email") {
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorMissingFields.Error())
+		return
+	}
+	email := r.Form["email"][0]
+	user, err := user.Get(h.Db, email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Println(err)
+			http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorNotFound.Error())
+			return
+		}
+		log.Println(err)
+		http_helper.ReturnResponseMsg(w, http.StatusBadRequest, postgres.ErrorCannotFulfilRequest.Error())
+		return
+	}
+	http_helper.ReturnResponseMsg(w, http.StatusOK, user)
 }
 
 // NextInteger returns an user integer +1

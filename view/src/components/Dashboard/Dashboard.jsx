@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { serializeObj } from "../../utils/utils"
 import { getUser, getInteger, patchInteger } from "../../utils/api"
 import { Header, Loader } from "../components"
+import { Auth0Context } from "../../react-auth0-spa"
 import {
   Panel,
   PanelGrid,
@@ -13,6 +14,9 @@ import {
 
 export default class Dashboard extends Component {
   _isMounted = false
+
+  // Assign Auth0 context to a static property
+  static contextType = Auth0Context
 
   state = {
     isLoadingUser: true,
@@ -39,13 +43,16 @@ export default class Dashboard extends Component {
 
   componentDidMount() {
     this._isMounted = true
-    this.fetchUser(1)
+    const { user } = this.context
+    this.fetchUser(user)
   }
 
-  fetchUser = id => {
-    return getUser(id)
-      .then(data => {
-        const user = data || []
+  fetchUser = authUser => {
+    const email = authUser.email
+    return getUser(serializeObj({ email }))
+      .then(res => {
+        const user = res.data || {}
+        console.log(user)
         this.safeSetState({ isLoadingUser: false, user })
       })
       .catch(error => {
@@ -54,13 +61,18 @@ export default class Dashboard extends Component {
       })
   }
 
-  requestNewInteger = id => {
+  requestNewInteger = () => {
     this.safeSetState({ isLoadingInteger: true })
-    getInteger(id)
+    getInteger(this.state.user.id || 0)
       .then(res => {
+        console.log(res)
+        console.log(this.state.user.id)
         if (res.status === 200) {
-          this.fetchUser(id)
-          this.safeSetState({ isLoadingInteger: false })
+          this.safeSetState(prevState => {
+            const user = prevState.user
+            user.int_value = res.data
+            return { isLoadingInteger: false, user }
+          })
         }
       })
       .catch(error => {
@@ -69,7 +81,7 @@ export default class Dashboard extends Component {
       })
   }
 
-  resetInteger = id => {
+  resetInteger = () => {
     let current = window.prompt(
       "Inform the new integer value (bigger than zero):"
     )
@@ -85,11 +97,14 @@ export default class Dashboard extends Component {
       return
     }
     this.safeSetState({ isLoadingInteger: true })
-    patchInteger(id, serializeObj({ current }))
+    patchInteger(this.state.user.id || 0, serializeObj({ current }))
       .then(res => {
         if (res.status === 200) {
-          this.fetchUser(id)
-          this.safeSetState({ isLoadingInteger: false })
+          this.safeSetState(prevState => {
+            const user = prevState.user
+            user.int_value = res.data
+            return { isLoadingInteger: false, user }
+          })
         }
       })
       .catch(error => {
@@ -125,12 +140,12 @@ export default class Dashboard extends Component {
                     <ActionBar.Actions>
                       <Button
                         glyph='add'
-                        onClick={() => this.requestNewInteger(user.id || 0)}>
+                        onClick={() => this.requestNewInteger()}>
                         Request New Integer
                       </Button>
                       <Button
                         glyph='refresh'
-                        onClick={() => this.resetInteger(user.id || 0)}>
+                        onClick={() => this.resetInteger()}>
                         Reset My Integer
                       </Button>
                     </ActionBar.Actions>

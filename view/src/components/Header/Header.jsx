@@ -5,7 +5,7 @@ import { Auth0Context } from "../../react-auth0-spa"
 
 // Header contains the Shell bar component from Fiori Fundamentals
 export default class Header extends Component {
-  // Assign the context type to a static property
+  // Assign Auth0 context to a static property
   static contextType = Auth0Context
 
   static propTypes = {

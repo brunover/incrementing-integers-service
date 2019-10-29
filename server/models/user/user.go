@@ -10,7 +10,6 @@ import (
 type User struct {
 	ID       int    `json:"id"`
 	Email    string `json:"email"`
-	Password string `json:"password"`
 	IntValue int    `json:"int_value"`
 	Created  string `json:"created"`
 	Updated  string `json:"updated"`
@@ -18,15 +17,15 @@ type User struct {
 
 // SeedUser Add initial user (admin) to table
 func SeedUser(db *postgres.DB) error {
-	user := &User{Email: "admin@admin.com", Password: "12345", IntValue: 0}
+	user := &User{Email: "admin@admin.com", IntValue: 0}
 	_, err := Create(db, user)
 	return err
 }
 
 // Create add new user to table
 func Create(db *postgres.DB, user *User) (int, error) {
-	err := db.QueryRow(`INSERT INTO users (email, password, int_value) VALUES ($1,$2,$3) RETURNING id;`,
-		user.Email, user.Password, user.IntValue).Scan(&user.ID)
+	err := db.QueryRow(`INSERT INTO users (email, int_value) VALUES ($1,$2) RETURNING id;`,
+		user.Email, user.IntValue).Scan(&user.ID)
 	return user.ID, err
 }
 
@@ -35,12 +34,12 @@ func GetList(db *postgres.DB) ([]interface{}, error) {
 	user := User{}
 	var arr []interface{}
 
-	sql := `SELECT id, email, password, int_value FROM users`
+	sql := `SELECT id, email, int_value, created, last_updated FROM users`
 	rows, err := db.Query(sql)
 	defer rows.Close()
 	for rows.Next() {
 		rows.Scan(
-			&user.Email, &user.Password, &user.IntValue, &user.Created, &user.Updated,
+			&user.ID, &user.Email, &user.IntValue, &user.Created, &user.Updated,
 		)
 		arr = append(arr, user)
 	}
@@ -48,10 +47,17 @@ func GetList(db *postgres.DB) ([]interface{}, error) {
 }
 
 // Get retrieves an User entry
-func Get(db *postgres.DB, id int) (interface{}, error) {
+func Get(db *postgres.DB, email string) (interface{}, error) {
 	user := &User{}
-	sql := `SELECT id, email, password, int_value FROM users WHERE id = $1`
-	err := db.QueryRow(sql, id).Scan(&user.ID, &user.Email, &user.Password, &user.IntValue)
+	query := `SELECT id, email, int_value FROM users WHERE email = $1`
+	err := db.QueryRow(query, email).Scan(&user.ID, &user.Email, &user.IntValue)
+	// If use ID is zero, no user was found in the database
+	if user.ID == 0 {
+		log.Printf("User %v was not found, creating it in the database", email)
+		userToCreate := &User{Email: email, IntValue: 0}
+		_, err := Create(db, userToCreate)
+		return userToCreate, err
+	}
 	return user, err
 }
 
@@ -59,8 +65,8 @@ func Get(db *postgres.DB, id int) (interface{}, error) {
 func NextInteger(db *postgres.DB, id int) (int, error) {
 	log.Printf("ID %d requested new integer", id)
 	user := User{}
-	sql := `SELECT id, email, password, int_value FROM users WHERE id = $1`
-	err := db.QueryRow(sql, id).Scan(&user.ID, &user.Email, &user.Password, &user.IntValue)
+	sql := `SELECT int_value FROM users WHERE id = $1`
+	err := db.QueryRow(sql, id).Scan(&user.IntValue)
 	nextInteger := user.IntValue + 1
 	intValue, err := UpdateInteger(db, id, nextInteger)
 	if err != nil {

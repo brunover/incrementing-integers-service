@@ -11,7 +11,7 @@ import (
 func TestUserSuite(t *testing.T) {
 	assert := assert.New(t)
 
-	u1 := &user.User{Email: "asds@adsd.com", Password: "test1", IntValue: 111}
+	u1 := &user.User{Email: "asds@adsd.com", IntValue: 111}
 	t.Run("create user with default int value", func(t *testing.T) {
 		_, err := user.Create(db, u1)
 		assert.Equal(pq.ErrorCode("23503"), err.(*pq.Error).Code, "state row must exist before user foreign key reference")
