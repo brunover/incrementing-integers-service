@@ -15,7 +15,7 @@ export const formatFileSize = size => {
 
 // Find and returns the key associated to a value in a javascript Map object
 export const getKeyByValue = (map, value) => {
-  const entry = [...map].find(([mapKey, mapVal]) => mapVal.includes(value))
+  const entry = [...map].find(([_, mapVal]) => mapVal.includes(value))
   // If an entry was found return its key (first index)
   return entry ? entry[0] : null
 }
@@ -46,62 +46,6 @@ export const formatSnippet = (snippet, content, maxCharQty = 200) => {
     // it will insert a highlighting yellow background
     .replace(content, `<mark>${content}</mark>`)
   return newSnippet
-}
-
-// A text may be too long to appear in tables, the formatText will
-// reduce it and put trailing dots at the end
-export const formatText = (text, maxCharQty = 15) => {
-  return text.length > maxCharQty ? `${text.substring(0, maxCharQty)}...` : text
-}
-
-// Given a state object, returns the name, glyph and class
-// to represent it on the HTML
-export const getStateHTMLInfo = stateObj => {
-  switch (stateObj.State) {
-    case "addressing": {
-      return {
-        name: "Addressing",
-        glyph: "thumb-up",
-        class: "fd-badge"
-      }
-    }
-    case "false": {
-      return {
-        name: "False positive",
-        glyph: "decline",
-        class: "fd-badge fd-badge--error"
-      }
-    }
-    case "fixed": {
-      return {
-        name: "Fixed",
-        glyph: "accept",
-        class: "fd-badge fd-badge--success"
-      }
-    }
-    case "irrelevant": {
-      return {
-        name: "Not relevant",
-        glyph: "thumb-down",
-        class: "fd-badge fd-badge--warning"
-      }
-    }
-    default: {
-      return {
-        name: "New",
-        glyph: "target-group",
-        class: "fd-counter"
-      }
-    }
-  }
-}
-
-// Renders a HTML Badge to be used anywhere around
-// the application with "dangerouslySetInnerHTML"
-export const renderStateHTMLBadge = (stateId, discoveriesStates) => {
-  const stateObj = discoveriesStates.find(d => d.Id === stateId)
-  const stateHTMLObj = getStateHTMLInfo(stateObj)
-  return `<span key='${stateHTMLObj.name}' class='${stateHTMLObj.class}'>${stateHTMLObj.name}</span>`
 }
 
 // Case insensitive sort function for string values
