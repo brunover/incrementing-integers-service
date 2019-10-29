@@ -1,5 +1,5 @@
 import React from "react"
-import { useAuth0 } from "../../react-auth0-spa"
+import { useAuth0 } from "../../utils/react-auth0-spa"
 import Routes from "../Routes/Routes"
 
 const NavBar = () => {

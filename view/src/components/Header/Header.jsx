@@ -1,7 +1,7 @@
 import React, { Component } from "react"
 import PropTypes from "prop-types"
 import { Shellbar } from "fundamental-react"
-import { Auth0Context } from "../../react-auth0-spa"
+import { Auth0Context } from "../../utils/react-auth0-spa"
 
 // Header contains the Shell bar component from Fiori Fundamentals
 export default class Header extends Component {

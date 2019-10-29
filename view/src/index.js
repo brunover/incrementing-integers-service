@@ -2,9 +2,9 @@ import React from "react"
 import ReactDOM from "react-dom"
 import App from "./components/App/App"
 import * as serviceWorker from "./serviceWorker"
-import { Auth0Provider } from "./react-auth0-spa"
 import { BrowserRouter } from "react-router-dom"
-import config from "./auth_config.json"
+import { Auth0Provider } from "./utils/react-auth0-spa"
+import config from "./utils/auth_config.json"
 
 // A function that routes the user to the right place
 // after login

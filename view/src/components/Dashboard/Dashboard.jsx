@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import { serializeObj } from "../../utils/utils"
 import { getUser, getInteger, patchInteger } from "../../utils/api"
 import { Header, Loader } from "../components"
-import { Auth0Context } from "../../react-auth0-spa"
+import { Auth0Context } from "../../utils/react-auth0-spa"
 import {
   Panel,
   PanelGrid,

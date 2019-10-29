@@ -1,7 +1,7 @@
 import React from "react"
 import "../../styles/App.css"
 import { NavBar, Loader } from "../components"
-import { useAuth0 } from "../../react-auth0-spa"
+import { useAuth0 } from "../../utils/react-auth0-spa"
 
 function App() {
   const { loading } = useAuth0()
