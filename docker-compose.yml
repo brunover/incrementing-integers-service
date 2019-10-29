@@ -1,0 +1,39 @@
+version: "3"
+services:
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./view/build:/var/www/increment-integer-service
+    ports:
+      - "80:80"
+    depends_on:
+      - goserver
+  goserver:
+    container_name: goserver
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - postgres
+  postgres:
+    container_name: postgres
+    image: postgres:10.5
+    restart: always
+    volumes:
+      - increment_integer_db:/var/lib/postgresql/data
+      - ./server/sql:/docker-entrypoint-initdb.d/
+    env_file:
+      - ./server/.env
+    # Postgres ports should never be exposed in production
+    # uncomment the ports only for development reasons
+    ports:
+      - "5432:5432"
+    environment:
+      # 'POSTGRES_PASSWORD' and 'POSTGRES_USER' are inside './server/.env'
+      POSTGRES_DB: "increment_integer"
+volumes:
+  increment_integer_db:

@@ -1,0 +1,37 @@
+# dependencies
+**/node_modules
+*.pnp
+*.pnp.js
+
+# testing
+**/coverage
+
+# logs
+**/logs
+*.log
+
+# production
+**/build
+
+# misc
+.DS_Store
+*.env
+**/.env
+
+# go server temps, configs and binaries
+/temp_storage/*
+/server/temp_storage/*
+/server/configuration/*
+/server/server.exe
+/server/server
+
+# certificates
+*.key
+*.crt
+*.csr
+
+# for Goland ide rules files
+.idea/*
+
+# Swap files
+*.swp
