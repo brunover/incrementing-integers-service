@@ -19,12 +19,12 @@ const api = axios.create({
 
 // -------------------------------------
 // USERS API
-export const getInteger = id => api.get(`/users/${id}/next`).then(res => res)
-
 export const getUser = body => {
-  return api.post(`/users/fetch`, body).then(res => res)
+  return api.post(`/users`, body).then(res => res)
 }
 
 export const patchInteger = (id, body) => {
   return api.patch(`/users/${id}/current`, body).then(res => res)
 }
+
+export const getInteger = id => api.get(`/users/${id}/next`).then(res => res)

@@ -72,7 +72,7 @@ func main() {
 
 	// Users routes
 	userRouter := sharedRouter.PathPrefix("/users").Subrouter()
-	userRouter.HandleFunc("/fetch", h.GetUser).Methods("POST")
+	userRouter.HandleFunc("", h.GetUser).Methods("POST")
 	userRouter.HandleFunc("/{id:[0-9]+}/next", h.NextInteger).Methods("GET")
 	userRouter.HandleFunc("/{id:[0-9]+}/current", h.CurrentInteger).Methods("GET")
 	userRouter.HandleFunc("/{id:[0-9]+}/current", h.UpdateInteger).Methods("PATCH")
