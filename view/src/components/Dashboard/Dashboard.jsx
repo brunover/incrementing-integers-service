@@ -158,18 +158,54 @@ export default class Dashboard extends Component {
                       <Panel>
                         <Panel.Body>
                           <Tile>
-                            <Tile.Content title='User'>
-                              <p className='fd-has-type-4'>
-                                {user.email || "No user"}
+                            <Tile.Content title='User info'>
+                              <br />
+                              <p>
+                                Email:{" "}
+                                <strong>{user.email || "No Email"}</strong>
                               </p>
+                              <p>
+                                ID (use it to fetch your integer using "curl"):{" "}
+                                <strong>{user.id || "No ID"}</strong>
+                              </p>
+                              <p>Examples:</p>
+                              <ul>
+                                <li>
+                                  Fetch current integer:
+                                  <br />
+                                  <code>
+                                    curl http://localhost/api/v1/users/
+                                    {user.id || 0}/current
+                                  </code>
+                                </li>
+                                <li>
+                                  Fetch next integer:
+                                  <br />
+                                  <code>
+                                    curl http://localhost/api/v1/users/
+                                    {user.id || 0}/next
+                                  </code>
+                                </li>
+                                <li>
+                                  Reset your integer:
+                                  <br />
+                                  <code>
+                                    curl -X "PATCH"
+                                    http://localhost/api/v1/users/{user.id || 0}
+                                    /current --data "current=1000"
+                                  </code>
+                                </li>
+                              </ul>
                             </Tile.Content>
                           </Tile>
                         </Panel.Body>
                       </Panel>
+
                       <Panel>
                         <Panel.Body>
                           <Tile>
                             <Tile.Content title='Current Integer'>
+                              <br />
                               <p className='fd-has-type-4'>
                                 {user.int_value || 0}
                                 {isLoadingInteger && (
