@@ -1,5 +1,3 @@
-[![LinkedIn][linkedin-shield]][linkedin-url]
-
 <!-- TABLE OF CONTENTS -->
 
 # Incrementing Integer Service
