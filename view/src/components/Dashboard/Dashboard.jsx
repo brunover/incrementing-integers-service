@@ -52,7 +52,6 @@ export default class Dashboard extends Component {
     return getUser(serializeObj({ email }))
       .then(res => {
         const user = res.data || {}
-        console.log(user)
         this.safeSetState({ isLoadingUser: false, user })
       })
       .catch(error => {
@@ -65,8 +64,6 @@ export default class Dashboard extends Component {
     this.safeSetState({ isLoadingInteger: true })
     getInteger(this.state.user.id || 0)
       .then(res => {
-        console.log(res)
-        console.log(this.state.user.id)
         if (res.status === 200) {
           this.safeSetState(prevState => {
             const user = prevState.user
