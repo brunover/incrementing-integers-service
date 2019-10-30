@@ -106,9 +106,11 @@ Check [Built With](#built-with) section to know what technologies you may need t
 1. For development, after installing [GoLang](https://golang.org/) clone the repo inside the gopath
 
 ```sh
+# this is the default GOPATH
 cd ~/go/src/github.com/
 git clone https://github.com/brunover/incrementing-integers-service
 cd incrementing-integers-service
+
 # for example, on Windows:
 go to 'C:\Users\YOUR_USERNAME\go\src\github.com\'
 git clone https://github.com/brunover/incrementing-integers-service.git
