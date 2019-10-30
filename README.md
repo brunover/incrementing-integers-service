@@ -23,7 +23,7 @@
 
 ## About The Project
 
-This project generate integers that automatically increment. Why you need to generate identifiers using sequential integers
+This project generates integers that automatically increment. Why you need to generate identifiers using sequential integers
 is not important ;) Suffice it to say that this project is based on a real-world scenario.
 
 ### Built With
@@ -40,7 +40,7 @@ is not important ;) Suffice it to say that this project is based on a real-world
 
 ## Getting Started
 
-Follow the `Quick Install` if you whant to see the project running or follow the `Prerequisites` and `Installation` to be able to modify the project on your own.
+Follow the `Quick Install` if you want to see the project running or follow the `Prerequisites` and `Installation` to be able to modify the project on your own.
 
 ### Quick Install
 
@@ -103,7 +103,7 @@ Check [Built With](#built-with) section to know what technologies you may need t
 
 ### Installation for development mode
 
-1. For development, after installing [GoLang](https://golang.org/) clone the repo inside the gopath
+1. For development, after installing [GoLang](https://golang.org/) clone the repo inside the GOPATH
 
 ```sh
 # this is the default GOPATH
@@ -162,7 +162,7 @@ cd view
 
 ## Usage
 
-With the UI runnig just log in and use the buttons to increment or reset the integer.
+With the UI running, just log in and use the buttons to increment or reset the integer.
 
 If you want to test the api using `curl` the endpoints are:
 
